@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "wXxQpy82wWdgR+gqJzpnkR1vioM97dhIVgKVNWa2xrtrqGDuU98UtJKOLwrO7dQijYxmhfBHOPp8aOnr8oEqIg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\HP\\source\\repos\\SellingMS\\src\\Services\\OrderService\\OrderService.Domain\\OrderService.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\mediatr\\10.0.1\\mediatr.10.0.1.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\mediatr.contracts\\1.0.1\\mediatr.contracts.1.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

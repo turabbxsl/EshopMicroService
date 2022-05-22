@@ -1,0 +1,110 @@
+﻿
+@page "/sebet"
+
+
+<div class="card">
+    <div class="row">
+        <div class="col-md-8 cart">
+            <div class="title">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Shopping Cart</b></h4>
+                    </div>
+
+                    <div class="col align-self-center text-right text-muted">@sebetModel.SebetItems.Count</div>
+                </div>
+            </div>
+
+            @if (sebetModel.SebetItems.Any())
+            {
+                foreach (var sebetItem in sebetModel.SebetItems)
+                {
+                    <div class="row border-top border-bottom">
+                        <div class="row main align-items-center">
+                            @{
+                                string pictureUrl = "http://localhost:5004/" + sebetItem.PictureUrl;
+                            }
+
+                            <div class="col-2"><img class="img-fluid" src="@pictureUrl" /></div>
+
+                            <div class="col">
+                                <div class="row text-muted">@sebetItem.ProductName</div>
+                            </div>
+
+                            <div class="col"><a href="#" class="border">@sebetItem.Quantity</a></div>
+                            <div class="col">
+                                $ @sebetItem.UnitPrice.ToString("N2")
+                                <span @onclick="@(async () => await RemoveItemFromList(sebetItem))"></span>
+                            </div>
+
+                            <button type="button" class="close" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="back-to-shop"><a href="catalog">&leftarrow;</a><span class="text-muted">Back To Shop</span></div>
+        </div>
+
+        <div class="col-md-4 summary">
+
+            <div>
+                <h5><b>Summary</b></h5>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col" style="padding-left:0;">Items @sebetModel.SebetItems.Count</div>
+                <div class="col text-right">$ @sebetModel.SebetItems.Sum(x => x.UnitPrice * x.Quantity)</div>
+            </div>
+
+            <div class="row" style="border-top:1px solid rgba(0,0,0,0.1);padding:2vh 0;">
+                <div class="col">Total Price</div>
+                <div class="col text-right">$ @sebetModel.SebetItems.Sum(x => x.UnitPrice * x.Quantity)</div>
+            </div><button class="btn" @onclick="@(() => Checkout())">Checkout</button>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+@code {
+
+
+    WebApp.Domain.Models.ViewModels.Sebet sebetModel = new WebApp.Domain.Models.ViewModels.Sebet();
+
+
+    [Inject]
+    ISebetService sebetService { get; set; }
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        sebetModel = await sebetService.GetSebet();
+    }
+
+
+    void Checkout()
+    {
+        NavigationManager.NavigateTo("/create-order");
+        Console.WriteLine("Navigation Create-Order");
+    }
+
+
+    async Task RemoveItemFromList(SebetItem sebetItem)
+    {
+        sebetModel.SebetItems.Remove(sebetItem);
+
+        sebetModel = await sebetService.UpdateSebet(sebetModel);
+    }
+
+}

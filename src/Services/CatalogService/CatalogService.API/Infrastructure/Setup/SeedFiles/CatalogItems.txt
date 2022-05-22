@@ -1,0 +1,9 @@
+﻿CatalogTypeName,CatalogBrandName,Description,Name,Price,PictureFileName,availablestock,onreOrder
+T-Shirt,.NET,".NET Bot Black Hoodie and more",.NET Bot Black Hoodie,19.5,1.png,100,false
+Mug,.NET,".NET Bot Black Hoodie and more",.NET Bot Black Hoodie,10.5,2.png,60,false
+Sheet,Other,Roslyn Red TShirt,Rosly red,16.5,3.png,40,false
+T-SHirt,Other,".NET Bot Black Hoodie and more",.NET Bot Black Hoodie,6,3.png,40,false
+Sheet,Other,Kudu purple hodie,Kudu purpple,19.5,3.png,40,false
+T-Shirt,Other,Prism WHite TSHirt,Prism white TsHirt,11.5,4.png,70,false
+Mug,.NET,".NET Bot Black Hoodie and more",.NET Bot Black Hoodie,12,5.png,20,false
+T-Shirt,.NET,De los Palotes,Pepito,17,6.png,0,false

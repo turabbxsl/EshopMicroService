@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "7w0+fc6N1pQcB/Td7G/qFnwQRbCLb/2PjMxfcxESltC3yn/nf3cL3K2gAFDZmMR7Tm+dqabRylcHPXZWmDQdWA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\HP\\source\\repos\\SellingMS\\src\\BuildingBlocks\\EventBus\\EventBusBase\\EventBus.Base.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0\\microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

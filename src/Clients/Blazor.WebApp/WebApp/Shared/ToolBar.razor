@@ -1,0 +1,118 @@
+﻿
+
+
+@if (isLoggedIn)
+{
+    <a href="sebet" class="ml-md-auto">@identityService.GetUsername() - Sebet(@sebetItemCount)</a>
+    <a class="ml-md-auto" @onclick="@GoLogoutPage">LogOut</a>
+}
+else
+{
+    <a class="ml-md-auto" @onclick="@GoLoginPage">Login</a>
+}
+
+
+
+
+
+@code {
+
+
+    private bool isLoggedIn;
+    private int sebetItemCount = 0;
+
+
+    [Inject]
+    IIdentityService identityService { get; set; }
+
+    [Inject]
+    ISebetService sebetService { get; set; }
+
+    [Inject]
+    AppStateManager appState { get; set; }
+
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+
+
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            appState.StateChanged += async (source, property) => await AppStateChanged(source, property);
+        }
+    }
+
+
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        await CalculateItemCount();
+    }
+
+
+
+
+    private async Task<int> CalculateItemCount()
+    {
+        isLoggedIn = identityService.isLoggedIn;
+
+        if (!isLoggedIn)
+        {
+            return 0;
+        }
+
+        var sebet = await sebetService.GetSebet();
+        var count = sebet.SebetItems == null ? 0 : sebet.SebetItems.Sum(x => x.Quantity);
+
+        sebetItemCount = count;
+
+        return count;
+    }
+
+
+    private async Task AppStateChanged(ComponentBase source, string property)
+    {
+        if (source == this)
+        {
+            return;
+        }
+
+        if (property == "increase")
+        {
+            sebetItemCount++;
+        }
+        else if (property == "updatesebet")
+        {
+            await CalculateItemCount();
+        }
+        else if (property == "login")
+        {
+            await CalculateItemCount();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+
+
+
+
+
+
+
+    private void GoLoginPage()
+    {
+        navigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(navigationManager.Uri)}", false);
+    }
+
+    private void GoLogoutPage()
+    {
+        navigationManager.NavigateTo($"logout?returnUrl={Uri.EscapeDataString(navigationManager.Uri)}", false);
+    }
+
+}

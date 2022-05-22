@@ -1,0 +1,67 @@
+﻿
+@page "/catalog"
+
+
+
+<div class="row">
+    @if (model.Data != null && model.Data.Any())
+    {
+        foreach (var catalogItem in model.Data)
+        {
+            <WebApp.Components.Catalog.ProductView.ProductView CatalogItem="catalogItem" Onclick="()=>AddToCart(catalogItem)" />
+        }
+    }
+</div>
+
+
+
+
+@code {
+
+    PaginatedItemsViewModel<CatalogItem> model = new PaginatedItemsViewModel<CatalogItem>();
+
+
+    [Inject]
+    ICatalogService CatalogService { get; set; }
+
+
+    [Inject]
+    IIdentityService IdentityService { get; set; }
+
+    [Inject]
+    ISebetService SebetService { get; set; }
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+
+    [Inject]
+    AppStateManager AppState { get; set; }
+
+
+
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        // sehife acilanda OnInitialized metodu isleyecek ve CatalogServisden metodu cagiraraq modelin icini dolduracag
+        model = await CatalogService.GetCatalogItems();
+    }
+
+
+
+    public async Task AddToCart(CatalogItem catalogItem)
+    {
+        if (!IdentityService.isLoggedIn)
+        {
+            // Istifadecini Login-e ReturnUrl ile birlikde gonderirik
+            NavigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+            return;
+        }
+
+        await SebetService.AddItemToSebet(catalogItem.Id);
+
+        AppState.UpdateCart(this);
+    }
+
+}

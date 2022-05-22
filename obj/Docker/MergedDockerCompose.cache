@@ -1,0 +1,281 @@
+networks:
+  net_apigateway:
+    driver: bridge
+    external: true
+    name: net_apigateway
+  net_backendservices:
+    driver: bridge
+    external: true
+    name: net_backendservices
+  net_frontend:
+    driver: bridge
+    external: true
+    name: net_frontend
+services:
+  basketservice.api:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/BasketService/BasketService.API/Dockerfile
+    container_name: c_basketservice
+    depends_on:
+      s_consul:
+        condition: service_started
+      s_rabbitmq:
+        condition: service_started
+      s_sqlserver:
+        condition: service_started
+      web.apigateway:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5003
+      ConsulConfig__Address: http://s_consul:8500
+      ConsulConfig__ServiceAddress: http://s_identityservice:5003
+      ConsulConfig__ServiceId: Basket
+      ConsulConfig__ServiceName: BasketService
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    - s_sqlserver
+    image: basketserviceapi
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 5005
+      target: 5005
+  catalogservice.api:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/CatalogService/CatalogService.API/Dockerfile
+    container_name: c_catalogservice
+    depends_on:
+      s_consul:
+        condition: service_started
+      s_rabbitmq:
+        condition: service_started
+      s_sqlserver:
+        condition: service_started
+      web.apigateway:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5004
+      ConsulConfig__Address: http://s_consul:8500
+      ConsulConfig__ServiceAddress: http://c_catalogservice:5004
+      ConsulConfig__ServiceId: Catalog
+      ConsulConfig__ServiceName: CatalogService
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    - s_sqlserver
+    image: catalogserviceapi
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 5004
+      target: 5004
+  identityservice.api:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/IdentityService/IdentityService.API/Dockerfile
+    container_name: c_identityservice
+    depends_on:
+      s_consul:
+        condition: service_started
+      s_rabbitmq:
+        condition: service_started
+      s_sqlserver:
+        condition: service_started
+      web.apigateway:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5005
+      ConsulConfig__Address: http://s_consul:8500
+      ConsulConfig__ServiceAddress: http://c_identityservice:5005
+      ConsulConfig__ServiceId: Identity
+      ConsulConfig__ServiceName: IdentityService
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    - s_sqlserver
+    image: identityserviceapi
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 5005
+      target: 5005
+  notificationservice:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/NotificationService/NotificationService/Dockerfile
+    container_name: c_notificationservice
+    depends_on:
+      s_rabbitmq:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    image: notificationservice
+    networks:
+      net_backendservices: {}
+    tty: true
+  orderservice.api:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/OrderService/OrderService.API/Dockerfile
+    container_name: c_orderservice
+    depends_on:
+      s_consul:
+        condition: service_started
+      s_rabbitmq:
+        condition: service_started
+      s_sqlserver:
+        condition: service_started
+      web.apigateway:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5002
+      ConsulConfig__Address: http://s_consul:8500
+      ConsulConfig__ServiceAddress: http://c_orderservice:5002
+      ConsulConfig__ServiceId: Order
+      ConsulConfig__ServiceName: OrderService
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    - s_sqlserver
+    image: orderserviceapi
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 5002
+      target: 5002
+  paymentservice.api:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Services/PaymentService/PaymentService.API/Dockerfile
+    container_name: c_paymentservice
+    depends_on:
+      s_consul:
+        condition: service_started
+      s_rabbitmq:
+        condition: service_started
+      s_sqlserver:
+        condition: service_started
+      web.apigateway:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConsulConfig__Address: http://s_consul:8500
+      ConsulConfig__ServiceAddress: http://c_identityservice:5001
+      ConsulConfig__ServiceId: Payment
+      ConsulConfig__ServiceName: PaymentService
+    external_links:
+    - c_graylog
+    - s_consul
+    - s_rabbitmq
+    - s_sqlserver
+    image: paymentserviceapi
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 5001
+      target: 5001
+  s_consul:
+    container_name: c_consul
+    image: consul
+    networks:
+      net_apigateway: {}
+      net_backendservices: {}
+      net_frontend: {}
+    ports:
+    - published: 8500
+      target: 8500
+    - protocol: tcp
+      published: 8600
+      target: 8600
+    - protocol: udp
+      published: 8600
+      target: 8600
+  s_rabbitmq:
+    container_name: c_rabbitmq
+    image: rabbitmq:3-managment
+    networks:
+      net_apigateway: {}
+      net_backendservices: {}
+      net_frontend: {}
+    ports:
+    - published: 5672
+      target: 5672
+    - published: 15672
+      target: 15672
+    volumes:
+    - rabbitmq:/var/lib/rabbitmq:rw
+  s_redis:
+    container_name: c_redis
+    image: redis
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 6379
+      target: 6379
+    volumes:
+    - /opt/app_data/redis:/data:rw
+  s_sqlserver:
+    container_name: c_sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: sifren
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    networks:
+      net_backendservices: {}
+    ports:
+    - published: 1433
+      target: 1433
+    user: root
+    volumes:
+    - sqlserver_data:/var/opt/mssql/data:rw
+    - sqlserver_log:/var/opt/mssql/log:rw
+  web.apigateway:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/ApiGateways/WebApiGateways/Web.ApiGateway/Dockerfile
+    container_name: c_apigateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+    image: webapigateway
+    networks:
+      net_apigateway: {}
+      net_backendservices: {}
+    ports:
+    - published: 5000
+      target: 5000
+  webapp:
+    build:
+      context: C:\Users\HP\source\repos\SellingMS
+      dockerfile: src/Clients/Blazor.WebApp/WebApp/Dockerfile
+    container_name: c_blazorui
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    image: webapp
+    networks:
+      net_apigateway: {}
+      net_frontend: {}
+    ports:
+    - published: 2000
+      target: 2000
+version: '3.4'
+volumes:
+  rabbitmq: {}
+  sqlserver_data: {}
+  sqlserver_log: {}

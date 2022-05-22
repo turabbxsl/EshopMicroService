@@ -1,0 +1,76 @@
+﻿
+@page "/login"
+
+@using System.Web
+
+
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+
+        <div class="col col-sm-6 col-lg-4 col-xl-3">
+
+            <EditForm Model="@userLoginRequest" OnValidSubmit="LoginProcess">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <input @bind-value="userLoginRequest.Username" class="form-control-lg" type="text" placeholder="UserName" />
+                </div>
+
+                <div class="form-group">
+                    <input @bind-value="userLoginRequest.Password" class="form-control-lg" type="password" placeholder="UserName" />
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-info btn-block">Login</button>
+                </div>
+
+            </EditForm>
+
+        </div>
+
+    </div>
+</div>
+
+
+@code {
+
+    [Inject]
+    IIdentityService identityservice { get; set; }
+
+
+    // seyfeden baska seyfeye yonlendirmek ucun
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+
+
+    [Inject]
+    AppStateManager appState { get; set; }
+
+
+
+    private UserLoginRequest userLoginRequest = new UserLoginRequest("", "");
+
+
+    private async Task LoginProcess()
+    {
+
+        var res = await identityservice.Login(userLoginRequest.Username, userLoginRequest.Password);
+
+        if (res)
+        {
+
+            // icerisinde oldugumuz seyfenin url-ni parse edecek ve bize collection ahlinda donecek
+            var collection = HttpUtility.ParseQueryString(new Uri(navigationManager.Uri).Query);
+
+            // retrunUrl adinda bir parametre var ise onun deyerini ver bize,yoxdursa meni ana sehifeye yonlendir
+            string returnUrl = collection.Get("returnUrl") ?? "/";
+
+            appState.LoginChanged(this);
+
+            navigationManager.NavigateTo(returnUrl);
+        }
+
+    }
+
+
+}

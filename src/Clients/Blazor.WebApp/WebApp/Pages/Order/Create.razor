@@ -1,0 +1,157 @@
+﻿@page "/create-order"
+
+<h3>Order Create</h3>
+
+<EditForm Model="@orderModel" OnValidSubmit="@OnValidSubmit">
+
+
+
+    <section class="esh-orders_new-section">
+        <h4 class="form-control">Shipping Address</h4>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Address</label>
+                    <InputText @bind-Value="orderModel.Street" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.Street)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>City</label>
+                    <InputText @bind-Value="orderModel.City" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.City)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>State</label>
+                    <InputText @bind-Value="orderModel.State" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.State)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Country</label>
+                    <InputText @bind-Value="orderModel.Country" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.Country)"></ValidationMessage>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="esh-orders_new-section">
+        <h4 class="form-control">Payment Method</h4>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <InputText @bind-Value="orderModel.CardNumber" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.CardNumber)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>CardHolderName</label>
+                    <InputText @bind-Value="orderModel.CardHolderName" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.CardHolderName)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>State</label>
+                    <InputText @bind-Value="orderModel.State" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.State)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>CardExpiration</label>
+                    <InputText @bind-Value="orderModel.CardExpiration" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.CardExpiration)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>CardSecurityNumber</label>
+                    <InputText @bind-Value="orderModel.CardSecurityNumber" class="form-control"></InputText>
+                    <ValidationMessage For="(() => orderModel.CardSecurityNumber)"></ValidationMessage>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="row">
+        <input type="submit" class="btn btn-primary" value="Make Payment" />
+    </div>
+</EditForm>
+
+
+@code
+{
+
+    [Inject]
+    ISebetService SebetService { get; set; }
+
+
+    [Inject]
+    IIdentityService IdentityService { get; set; }
+
+
+    [Inject]
+    IOrderService OrderService { get; set; }
+
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+
+    [Inject]
+    AppStateManager AppStateManager { get; set; }
+
+
+
+
+    Order orderModel = new Order()
+    {
+        CardExpirationShort = "10/24",
+        CardHolderName = "turab bakhishli",
+        CardNumber = "2141279387128",
+        CardSecurityNumber = "123",
+        CartTypeId = 1,
+        City = "Baki",
+        Description = "dasjdisad",
+        Street = "SSfasdas",
+        Country = "dasdasdasd"
+    };
+
+
+    async Task OnValidSubmit()
+    {
+        orderModel.Buyer = IdentityService.GetUsername();
+
+        var sebetDTO = OrderService.MapOrderToSebet(orderModel);
+
+        await SebetService.Checkout(sebetDTO);
+
+        AppStateManager.UpdateCart(this);
+
+        NavigationManager.NavigateTo("/");
+    }
+
+
+
+
+
+
+}
